@@ -1,0 +1,20 @@
+[GLOBAL]
+pants_version = "2.11.0"
+backend_packages = [
+    "pants.backend.python"
+]
+
+[tailor]
+ignore_paths = ["dags/**", "mwaa/**"]
+
+[python]
+interpreter_constraints = [">=3.9,<3.11"]
+lockfile_generator = 'pex'
+enable_resolves = true
+
+[python.resolves]
+python-default = "3rdparty/python-default/python-default.lock"
+
+[anonymous-telemetry]
+enabled = false
+
