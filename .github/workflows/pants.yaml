@@ -39,17 +39,17 @@ jobs:
         ./pants --version
     - name: Check BUILD files
       run: ./pants tailor --check update-build-files --check
-    - name: Lint and typecheck
-      run: |
-        ./pants lint check ::
-    - name: Test
-      run: |
-        ./pants test ::
+    # - name: Lint and typecheck
+    #   run: |
+    #     ./pants lint check ::
+    # - name: Test
+    #   run: |
+    #     ./pants test ::
     - name: Package / Run
       run: |
         # We also smoke test that our release process will work by running `package`.
         ./pants package ::
-        ./pants run helloworld/main.py
+        ./pants run jobs/job_b/main.py
     - name: Upload pants log
       uses: actions/upload-artifact@v2
       with:
