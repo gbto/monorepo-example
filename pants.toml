@@ -1,11 +1,12 @@
 [GLOBAL]
 pants_version = "2.11.0"
 backend_packages = [
-    "pants.backend.python"
+    "pants.backend.docker",
+    "pants.backend.docker.lint.hadolint",
+    "pants.backend.python",
+    "pants.backend.python.lint.black",
+    "pants.backend.python.lint.flake8",
 ]
-
-[tailor]
-ignore_paths = ["dags/**", "mwaa/**"]
 
 [python]
 interpreter_constraints = [">=3.9,<3.11"]
@@ -18,3 +19,6 @@ python-default = "3rdparty/python-default/python-default.lock"
 [anonymous-telemetry]
 enabled = false
 
+[docker.registries.aws-ecr]
+address = "895539818407.dkr.ecr.eu-west-1.amazonaws.com"
+default = true
