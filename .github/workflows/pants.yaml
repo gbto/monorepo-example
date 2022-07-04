@@ -1,71 +1,95 @@
-# name: Build Pants packages
+name: Build Pants packages
 
-# on: [push, pull_request]
+on: [push, pull_request]
 
-# jobs:
-#   # org-check:
-#   #   name: Check GitHub Organization
-#   #   if: ${{ github.repository_owner == 'LedgerHQ' }}
-#   #   runs-on: ubuntu-20.04
-#   #   steps:
-#   #     - name: Noop
-#   #       run: "true"
+permissions:
+  id-token: write # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
 
-#   build:
-#     name: Perform CI Checks
-#     # needs: org-check
-#     env:
-#       PANTS_CONFIG_FILES: pants.ci.toml
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         python-version: [3.9]
-#     steps:
-#       # CHECKOUT THE REPO
-#       - uses: actions/checkout@v2
-#       - uses: actions/cache@v2
-#         id: cache
-#         with:
-#           path: |
-#             ~/.cache/pants/setup
-#             ~/.cache/pants/lmdb_store
-#             ~/.cache/pants/named_caches
-#           key: ${{ runner.os }}-
-#       # INSTALL PYTHON
-#       - name: Setup Python ${{ matrix.python-version }}
-#         uses: actions/setup-python@v1
-#         with:
-#           python-version: ${{ matrix.python-version }}
-#       # AWS CREDENTIALS
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           role-to-assume: arn:aws:iam::895539818407:role/github_actions_role
-#           aws-region: eu-west-1
+jobs:
+  org-check:
+    name: Check GitHub Organization
+    if: ${{ github.repository_owner == 'gbto' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Noop
+        run: "true"
 
-#       # PANTS - INSTALL PANTS
-#       - name: Bootstrap Pants
-#         run: |
-#           ./pants --version
-#       - name: Check BUILD files
-#         run: ./pants tailor --check update-build-files --check
-#       # PANTS - LINTING AND TESTING
-#       # - name: Lint and typecheck
-#       #   run: |
-#       #     ./pants lint check ::
-#       # - name: Test
-#       #   run: |
-#       #     ./pants test ::
-#       # PANTS - RUN PACKAGES
-#       - name: Package / Run
-#         run: |
-#           # We also smoke test that our release process will work by running `package`.
-#           ./pants package ::
-#           ./pants run jobs/job_b/main.py
-#       # PANTS - LOG ACTIVITY
-#       - name: Upload pants log
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: pants-log
-#           path: .pants.d/pants.log
-#         if: always() # We want the log even on failures.
+  build:
+    name: Perform CI Checks
+    needs: org-check
+    env:
+      PANTS_CONFIG_FILES: pants.ci.toml
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      # CHECKOUT THE REPO
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ~/.cache/pants/setup
+            ~/.cache/pants/lmdb_store
+            ~/.cache/pants/named_caches
+          key: ${{ runner.os }}-
+
+      # INSTALL PYTHON
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # CONNECT TO AWS
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::895539818407:role/github-oidc
+          aws-region: eu-west-1
+      - name: Test AWS Creds
+        run: aws sts get-caller-identity
+
+      # PANTS - INSTALL PANTS
+      - name: Bootstrap Pants
+        run: |
+          ./pants --version
+
+      # PANTS - CHECK BUILD FILES
+      - name: Check BUILD files
+        run: ./pants tailor --check update-build-files --check
+
+      # PANTS - LINTING AND TESTING
+      # - name: Lint and typecheck
+      #   run: |
+      #     ./pants lint check ::
+      # - name: Test
+      #   run: |
+      #     ./pants test ::
+
+      # PANTS - RUN PACKAGES
+      - name: Package / Run
+        run: |
+          # We also smoke test that our release process will work by running `package`.
+          ./pants package ::
+          ./pants run jobs/job_b/main.py
+
+      # PANTS - LOG ACTIVITY
+      - name: Upload pants log
+        uses: actions/upload-artifact@v2
+        with:
+          name: pants-log
+          path: .pants.d/pants.log
+        if: always() # We want the log even on failures.
+
+      # PANTS - CONNECT TO ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # PANTS - PUBLISH TO ECR
+      - name: Push pants images
+        run: |
+          ./pants publish jobs/job_b/:docker

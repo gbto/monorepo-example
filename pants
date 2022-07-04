@@ -46,7 +46,7 @@ _PEX_EXPECTED_SHA256="56668b1ca147bd63141e586ffee97c7cc51ce8e6eac6c9b7a4bf1215b9
 
 VIRTUALENV_VERSION=20.4.7
 VIRTUALENV_REQUIREMENTS=$(
-cat << EOF
+  cat <<EOF
 virtualenv==${VIRTUALENV_VERSION} --hash sha256:2b0126166ea7c9c3661f5b8e06773d28f83322de7a3ff7d06f0aed18c9de6a76
 filelock==3.0.12 --hash sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836
 six==1.16.0 --hash sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
@@ -100,11 +100,11 @@ function get_pants_config_string_value {
   local raw_value
   raw_value="$(sed -ne "/${prefix}/ s|${prefix}||p" "${PANTS_TOML}")"
   local optional_suffix="${optional_space}(#.*)?$"
-  echo "${raw_value}" \
-    | sed -E \
+  echo "${raw_value}" |
+    sed -E \
       -e "s|^'([^']*)'${optional_suffix}|\1|" \
-      -e 's|^"([^"]*)"'"${optional_suffix}"'$|\1|' \
-    && return 0
+      -e 's|^"([^"]*)"'"${optional_suffix}"'$|\1|' &&
+    return 0
   return 0
 }
 
@@ -261,11 +261,11 @@ function bootstrap_pex {
       staging_dir=$(tempdir "${PANTS_BOOTSTRAP}")
       cd "${staging_dir}"
       curl --proto "=https" \
-           --tlsv1.2 \
-           --silent \
-           --location \
-           --remote-name \
-           "${_PEX_URL}"
+        --tlsv1.2 \
+        --silent \
+        --location \
+        --remote-name \
+        "${_PEX_URL}"
       fingerprint="$(compute_sha256 "${python}" "pex")"
       if [[ "${_PEX_EXPECTED_SHA256}" != "${fingerprint}" ]]; then
         die "SHA256 of ${_PEX_URL} is not as expected. Aborting."
@@ -305,7 +305,7 @@ function bootstrap_virtualenv {
       local staging_dir
       staging_dir=$(tempdir "${PANTS_BOOTSTRAP}")
       cd "${staging_dir}"
-      echo "${VIRTUALENV_REQUIREMENTS}" > requirements.txt
+      echo "${VIRTUALENV_REQUIREMENTS}" >requirements.txt
       (
         scrub_env_vars
         "${python}" "${pex_path}" -r requirements.txt -c virtualenv -o virtualenv.pex
@@ -330,11 +330,11 @@ function get_version_for_sha {
   # Retrieve the Pants version associated with this commit.
   local pants_version
   pants_version="$(curl --proto "=https" \
-                        --tlsv1.2 \
-                        --fail \
-                        --silent \
-                        --location \
-                        "https://raw.githubusercontent.com/pantsbuild/pants/${sha}/src/python/pants/VERSION")"
+    --tlsv1.2 \
+    --fail \
+    --silent \
+    --location \
+    "https://raw.githubusercontent.com/pantsbuild/pants/${sha}/src/python/pants/VERSION")"
 
   # Construct the version as the release version from src/python/pants/VERSION, plus the string `+gitXXXXXXXX`,
   # where the XXXXXXXX is the first 8 characters of the SHA.
@@ -352,7 +352,7 @@ function bootstrap_pants {
     maybe_find_links=""
   else
     maybe_find_links="--find-links=$(find_links_url "${pants_version}" "${pants_sha}")"
-   fi
+  fi
   local python_major_minor_version
   python_major_minor_version="$(get_python_major_minor_version "${python}")"
   local target_folder_name="${pants_version}_py${python_major_minor_version}"
@@ -369,15 +369,15 @@ function bootstrap_pants {
       (
         scrub_env_vars
         # shellcheck disable=SC2086
-        "${python}" "${virtualenv_path}" --quiet --no-download "${staging_dir}/install" && \
-        # Grab the latest pip, but don't advance setuptools past 58 which drops support for the
-        # `setup` kwarg `use_2to3` which Pants 1.x sdist dependencies (pystache) use.
-        "${staging_dir}/install/bin/pip" install --quiet -U pip "setuptools<58" && \
-        "${staging_dir}/install/bin/pip" install ${maybe_find_links} --quiet --progress-bar off "${pants_requirement}"
-      ) && \
-      ln -s "${staging_dir}/install" "${staging_dir}/${target_folder_name}" && \
-      mv "${staging_dir}/${target_folder_name}" "${bootstrapped}" && \
-      green "New virtual environment successfully created at ${bootstrapped}."
+        "${python}" "${virtualenv_path}" --quiet --no-download "${staging_dir}/install" &&
+          # Grab the latest pip, but don't advance setuptools past 58 which drops support for the
+          # `setup` kwarg `use_2to3` which Pants 1.x sdist dependencies (pystache) use.
+          "${staging_dir}/install/bin/pip" install --quiet -U pip "setuptools<58" &&
+          "${staging_dir}/install/bin/pip" install ${maybe_find_links} --quiet --progress-bar off "${pants_requirement}"
+      ) &&
+        ln -s "${staging_dir}/install" "${staging_dir}/${target_folder_name}" &&
+        mv "${staging_dir}/${target_folder_name}" "${bootstrapped}" &&
+        green "New virtual environment successfully created at ${bootstrapped}."
     ) 1>&2 || exit 1
   fi
   echo "${bootstrapped}"

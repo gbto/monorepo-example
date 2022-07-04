@@ -8,7 +8,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   ]
 }
 
-data "aws_iam_policy_document" "github" {
+data "aws_iam_policy_document" "github_actions_trust_policy" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -32,7 +32,27 @@ data "aws_iam_policy_document" "github" {
   }
 }
 
+data "aws_iam_policy_document" "github_actions_ecr_policy" {
+  statement {
+    sid    = ""
+    effect = "Allow"
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart"
+    ]
+    resources = ["*"]
+  }
+}
+
 resource "aws_iam_role" "github" {
   name               = "github-oidc"
-  assume_role_policy = data.aws_iam_policy_document.github.json
+  assume_role_policy = data.aws_iam_policy_document.github_actions_trust_policy.json
+  inline_policy {
+    name   = "${var.project_name}-github-actions-ecr-${var.env_name}"
+    policy = data.aws_iam_policy_document.github_actions_ecr_policy.json
+  }
 }
