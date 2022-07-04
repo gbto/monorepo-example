@@ -1,58 +1,71 @@
-name: Build Pants packages
+# name: Build Pants packages
 
-on: [push, pull_request]
+# on: [push, pull_request]
 
-jobs:
-  # org-check:
-  #   name: Check GitHub Organization
-  #   if: ${{ github.repository_owner == 'LedgerHQ' }}
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Noop
-  #       run: "true"
+# jobs:
+#   # org-check:
+#   #   name: Check GitHub Organization
+#   #   if: ${{ github.repository_owner == 'LedgerHQ' }}
+#   #   runs-on: ubuntu-20.04
+#   #   steps:
+#   #     - name: Noop
+#   #       run: "true"
 
-  build:
-    name: Perform CI Checks
-    # needs: org-check
-    env:
-      PANTS_CONFIG_FILES: pants.ci.toml
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      id: cache
-      with:
-        path: |
-          ~/.cache/pants/setup
-          ~/.cache/pants/lmdb_store
-          ~/.cache/pants/named_caches
-        key: ${{ runner.os }}-
-    - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Bootstrap Pants
-      run: |
-        ./pants --version
-    - name: Check BUILD files
-      run: ./pants tailor --check update-build-files --check
-    # - name: Lint and typecheck
-    #   run: |
-    #     ./pants lint check ::
-    # - name: Test
-    #   run: |
-    #     ./pants test ::
-    - name: Package / Run
-      run: |
-        # We also smoke test that our release process will work by running `package`.
-        ./pants package ::
-        ./pants run jobs/job_b/main.py
-    - name: Upload pants log
-      uses: actions/upload-artifact@v2
-      with:
-        name: pants-log
-        path: .pants.d/pants.log
-      if: always()  # We want the log even on failures.
+#   build:
+#     name: Perform CI Checks
+#     # needs: org-check
+#     env:
+#       PANTS_CONFIG_FILES: pants.ci.toml
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python-version: [3.9]
+#     steps:
+#       # CHECKOUT THE REPO
+#       - uses: actions/checkout@v2
+#       - uses: actions/cache@v2
+#         id: cache
+#         with:
+#           path: |
+#             ~/.cache/pants/setup
+#             ~/.cache/pants/lmdb_store
+#             ~/.cache/pants/named_caches
+#           key: ${{ runner.os }}-
+#       # INSTALL PYTHON
+#       - name: Setup Python ${{ matrix.python-version }}
+#         uses: actions/setup-python@v1
+#         with:
+#           python-version: ${{ matrix.python-version }}
+#       # AWS CREDENTIALS
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: arn:aws:iam::895539818407:role/github_actions_role
+#           aws-region: eu-west-1
+
+#       # PANTS - INSTALL PANTS
+#       - name: Bootstrap Pants
+#         run: |
+#           ./pants --version
+#       - name: Check BUILD files
+#         run: ./pants tailor --check update-build-files --check
+#       # PANTS - LINTING AND TESTING
+#       # - name: Lint and typecheck
+#       #   run: |
+#       #     ./pants lint check ::
+#       # - name: Test
+#       #   run: |
+#       #     ./pants test ::
+#       # PANTS - RUN PACKAGES
+#       - name: Package / Run
+#         run: |
+#           # We also smoke test that our release process will work by running `package`.
+#           ./pants package ::
+#           ./pants run jobs/job_b/main.py
+#       # PANTS - LOG ACTIVITY
+#       - name: Upload pants log
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: pants-log
+#           path: .pants.d/pants.log
+#         if: always() # We want the log even on failures.
