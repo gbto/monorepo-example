@@ -5,4 +5,6 @@ pex_binary(
     entry_point="main.py",
 )
 
-docker_image(name="docker", repository="bar")
+docker_image(
+    name="docker", repository="job_a", registries=["ghcr.io/gbto"], image_tags=["1.0", "latest"]
+)

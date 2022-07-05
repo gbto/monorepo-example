@@ -2,10 +2,6 @@ name: Build Pants packages
 
 on: [push, pull_request]
 
-permissions:
-  id-token: write # required to use OIDC authentication
-  contents: read # required to checkout the code from the repo
-
 jobs:
   org-check:
     name: Check GitHub Organization
@@ -15,7 +11,7 @@ jobs:
       - name: Noop
         run: "true"
 
-  build:
+  build-images:
     name: Perform CI Checks
     needs: org-check
     env:
@@ -36,27 +32,15 @@ jobs:
             ~/.cache/pants/named_caches
           key: ${{ runner.os }}-
 
-      # INSTALL PYTHON
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      # CONNECT TO AWS
-      - name: configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: arn:aws:iam::895539818407:role/github-oidc
-          aws-region: eu-west-1
-      - name: Test AWS Creds
-        run: aws sts get-caller-identity
-
-      # PANTS - INSTALL PANTS
-      - name: Bootstrap Pants
+      - name: Bootstrap pants
         run: |
           ./pants --version
 
-      # PANTS - CHECK BUILD FILES
       - name: Check BUILD files
         run: ./pants tailor --check update-build-files --check
 
@@ -68,14 +52,16 @@ jobs:
       #   run: |
       #     ./pants test ::
 
-      # PANTS - RUN PACKAGES
-      - name: Package / Run
+      - name: Package Images
         run: |
           # We also smoke test that our release process will work by running `package`.
-          ./pants --changed-since=origin/main --changed-dependees=transitive package ::
-          ./pants --changed-since=origin/main --changed-dependees=transitive run jobs/job_b/main.py
+          ./pants --changed-since=origin/main --changed-dependees=transitive package
+          # ./pants --changed-since=origin/main --changed-dependees=transitive run
 
-      # PANTS - LOG ACTIVITY
+      - name: Push pants images
+        run: |
+          ./pants --changed-since=origin/main --changed-dependees=transitive publish
+
       - name: Upload pants log
         uses: actions/upload-artifact@v2
         with:
@@ -83,12 +69,3 @@ jobs:
           path: .pants.d/pants.log
         if: always() # We want the log even on failures.
 
-      # PANTS - CONNECT TO ECR
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      # PANTS - PUBLISH TO ECR
-      - name: Push pants images
-        run: |
-          ./pants publish jobs/job_b/:docker

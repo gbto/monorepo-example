@@ -19,6 +19,6 @@ python-default = "3rdparty/python-default/python-default.lock"
 [anonymous-telemetry]
 enabled = false
 
-[docker.registries.aws-ecr]
-address = "895539818407.dkr.ecr.eu-west-1.amazonaws.com"
+[docker.registries.ghcr]
+address = "ghcr.io/gbto"
 default = true
