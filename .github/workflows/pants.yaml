@@ -26,7 +26,6 @@ jobs:
       matrix:
         python-version: [3.9]
     steps:
-      # CHECKOUT THE REPO
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         id: cache
@@ -73,8 +72,8 @@ jobs:
       - name: Package / Run
         run: |
           # We also smoke test that our release process will work by running `package`.
-          ./pants package ::
-          ./pants run jobs/job_b/main.py
+          ./pants --changed-since=origin/main --changed-dependees=transitive package ::
+          ./pants --changed-since=origin/main --changed-dependees=transitive run jobs/job_b/main.py
 
       # PANTS - LOG ACTIVITY
       - name: Upload pants log
