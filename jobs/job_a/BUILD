@@ -6,5 +6,8 @@ pex_binary(
 )
 
 docker_image(
-    name="docker", repository="job_a", registries=["ghcr.io/gbto"], image_tags=["1.0", "latest"]
+    name="docker",
+    repository="job_a",
+    registries=["ghcr.io/gbto"],
+    image_tags=["1.0", "latest"],
 )
