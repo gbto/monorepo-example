@@ -12,7 +12,7 @@ jobs:
         run: "true"
 
   build-images:
-    name: Perform CI Checks
+    name: Build and Publish Images
     needs: org-check
     env:
       PANTS_CONFIG_FILES: pants.ci.toml
@@ -52,15 +52,15 @@ jobs:
       #   run: |
       #     ./pants test ::
 
-      - name: Package Images
+      - name: Package images
         run: |
           # We also smoke test that our release process will work by running `package`.
-          ./pants --changed-since=origin/main --changed-dependees=transitive package
+          ./pants package ::
           # ./pants --changed-since=origin/main --changed-dependees=transitive run
 
       - name: Push pants images
         run: |
-          ./pants --changed-since=origin/main --changed-dependees=transitive publish
+          ./pants publish ::
 
       - name: Upload pants log
         uses: actions/upload-artifact@v2
