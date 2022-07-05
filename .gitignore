@@ -44,3 +44,6 @@ terraform.rc
 # workflow specific
 **/*.gz
 **/*.zip
+
+# environment variables
+.env
