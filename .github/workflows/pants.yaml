@@ -2,6 +2,10 @@ name: Build Pants packages
 
 on: [push, pull_request]
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   org-check:
     name: Check GitHub Organization
@@ -57,6 +61,8 @@ jobs:
           ./pants --changed-since=origin/main --changed-dependees=transitive check package
 
       - name: Push pants images
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
           ./pants --changed-since=origin/main --changed-dependees=transitive check publish
