@@ -10,7 +10,7 @@ def display() -> None:
     """Display result of actions from other modules."""
     click.echo(action_1())
     click.echo(action_2())
-    print("CI test with Python files changes!")
+    print("CI test with Python files changes, now what?")
 
 
 if __name__ == "__main__":
