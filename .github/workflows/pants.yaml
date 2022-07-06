@@ -54,13 +54,12 @@ jobs:
 
       - name: Package images
         run: |
-          # We also smoke test that our release process will work by running `package`.
-          ./pants package ::
-          # ./pants --changed-since=origin/main --changed-dependees=transitive run
+          ./pants --changed-since=origin/main --changed-dependees=transitive check package
 
       - name: Push pants images
         run: |
-          ./pants publish ::
+          echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+          ./pants --changed-since=origin/main --changed-dependees=transitive check publish
 
       - name: Upload pants log
         uses: actions/upload-artifact@v2
