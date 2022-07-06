@@ -1,4 +1,4 @@
-name: Build Pants packages
+name: CI - Pants
 
 on: [push, pull_request]
 
@@ -8,23 +8,23 @@ permissions:
 
 jobs:
   org-check:
-    name: Check GitHub Organization
+    name: Check Github Organisation
     if: ${{ github.repository_owner == 'gbto' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Noop
+      - name: Check Github Organisation
         run: "true"
 
   build-images:
-    name: Build and Publish Images
+    name: Lint > Build > Publish
     needs: org-check
     env:
       PANTS_CONFIG_FILES: pants.ci.toml
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.9]
+
     steps:
       # Checkout the repository on current branch
       - uses: actions/checkout@v3

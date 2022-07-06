@@ -1,4 +1,4 @@
-name: Build Pants packages
+name: CI - AWS
 
 on: [push, pull_request]
 
@@ -12,11 +12,11 @@ jobs:
     if: ${{ github.repository_owner == 'gbto' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Noop
+      - name: Check Github Organisation
         run: "true"
 
   authenticate-to-aws:
-    name: Authenticate to AWS
+    name: CI - AWS
     needs: org-check
     env:
       PANTS_CONFIG_FILES: pants.ci.toml
@@ -32,6 +32,7 @@ jobs:
           aws-region: eu-west-1
       - name: Test AWS Creds
         run: aws sts get-caller-identity
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
