@@ -55,18 +55,18 @@ jobs:
 
       - name: Lint changed code
         run: |
-          ./pants --changed-since=main --changed-dependees=transitive check lint
+          ./pants --changed-since=origin/main --changed-dependees=transitive check lint
 
       - name: Build modified images
         run: |
-          ./pants --changed-since=main --changed-dependees=transitive check package
+          ./pants --changed-since=origin/main --changed-dependees=transitive check package
 
       - name: Push images to Github Container Registry
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-          ./pants --changed-since=main --changed-dependees=transitive check publish
+          ./pants --changed-since=origin/main --changed-dependees=transitive check publish
 
       - name: Upload Pants log
         uses: actions/upload-artifact@v2
