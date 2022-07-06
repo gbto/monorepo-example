@@ -28,8 +28,9 @@ PYTHON_BIN_NAME="${PYTHON:-unspecified}"
 # Set this to specify a non-standard location for this script to read the Pants version from.
 # NB: This will *not* cause Pants itself to use this location as a config file.
 #     You can use PANTS_CONFIG_FILES or --pants-config-files to do so.
-PANTS_TOML=${PANTS_TOML:-pants.toml}
+PANTS_CONFIG_FILES=pants.ci.toml
 
+PANTS_TOML=${PANTS_TOML:-pants.toml}
 PANTS_BIN_NAME="${PANTS_BIN_NAME:-$0}"
 
 PANTS_SETUP_CACHE="${PANTS_SETUP_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/pants/setup}"

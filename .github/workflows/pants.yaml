@@ -26,7 +26,19 @@ jobs:
       matrix:
         python-version: [3.9]
     steps:
-      - uses: actions/checkout@v2
+      # Checkout the repository on current branch
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^
+
+      # Set-up Python
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Activate cache for pants files on the GitHub actions server
       - uses: actions/cache@v2
         id: cache
         with:
@@ -36,11 +48,7 @@ jobs:
             ~/.cache/pants/named_caches
           key: ${{ runner.os }}-
 
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-
+      # Perform pants bootstrap, linting, packaging and publishing
       - name: Bootstrap pants
         run: |
           ./pants --version
@@ -48,13 +56,9 @@ jobs:
       - name: Check BUILD files
         run: ./pants tailor --check update-build-files --check
 
-      # PANTS - LINTING AND TESTING
-      # - name: Lint and typecheck
-      #   run: |
-      #     ./pants lint check ::
-      # - name: Test
-      #   run: |
-      #     ./pants test ::
+      - name: Lint changed code
+        run: |
+          ./pants --changed-since=origin/main --changed-dependees=transitive check lint
 
       - name: Package images
         run: |
@@ -72,5 +76,4 @@ jobs:
         with:
           name: pants-log
           path: .pants.d/pants.log
-        if: always() # We want the log even on failures.
-
+        if: always() # Save log even on failures
