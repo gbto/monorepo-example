@@ -8,7 +8,7 @@ from utils.package_1.main import action_1
 def display() -> None:
     """Display result of actions from other modules."""
     click.echo(action_1())
-    print("Finished")
+    print("CI test with Python files changes!")
 
 
 if __name__ == "__main__":

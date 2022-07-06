@@ -26,20 +26,18 @@ jobs:
         python-version: [3.9]
 
     steps:
-      # Checkout the repository on current branch
-      - uses: actions/checkout@v3
+      - name: Checkout Github repository
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 2
-      - run: git checkout HEAD^
+          fetch-depth: 2 # fetch 2 last commits
 
-      # Set-up Python
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Activate cache for pants files on the GitHub actions server
-      - uses: actions/cache@v2
+      - name: Cache dependencies and builds outputs
+        uses: actions/cache@v2
         id: cache
         with:
           path: |
@@ -48,8 +46,7 @@ jobs:
             ~/.cache/pants/named_caches
           key: ${{ runner.os }}-
 
-      # Perform pants bootstrap, linting, packaging and publishing
-      - name: Bootstrap pants
+      - name: Bootstrap Pants
         run: |
           ./pants --version
 
@@ -58,20 +55,20 @@ jobs:
 
       - name: Lint changed code
         run: |
-          ./pants --changed-since=origin/main --changed-dependees=transitive check lint
+          ./pants --changed-since=main --changed-dependees=transitive check lint
 
-      - name: Package images
+      - name: Build modified images
         run: |
-          ./pants --changed-since=origin/main --changed-dependees=transitive check package
+          ./pants --changed-since=main --changed-dependees=transitive check package
 
-      - name: Push pants images
+      - name: Push images to Github Container Registry
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-          ./pants --changed-since=origin/main --changed-dependees=transitive check publish
+          ./pants --changed-since=main --changed-dependees=transitive check publish
 
-      - name: Upload pants log
+      - name: Upload Pants log
         uses: actions/upload-artifact@v2
         with:
           name: pants-log
