@@ -6,6 +6,10 @@
 [GLOBAL]
 dynamic_ui = false
 colors = true
+plugins = ["hdrhistogram"]
 
 [pytest]
 args = ["-vv", "--no-header"]
+
+[stats]
+log = true
