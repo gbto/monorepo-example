@@ -7,10 +7,17 @@ backend_packages = [
     "pants.backend.python.lint.flake8",
 ]
 
+[source]
+root_patterns = ["jobs/", "utils/"]
+
+[tailor]
+ignore_paths = ["infra/**"]
+
 [python]
 interpreter_constraints = [">=3.9,<3.11"]
 lockfile_generator = 'pex'
 enable_resolves = true
+resolves_generate_lockfiles = true
 
 [python.resolves]
 python-default = "3rdparty/python-default/python-default.lock"
