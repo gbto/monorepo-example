@@ -10,8 +10,7 @@
 //   ],
 //   "generated_with_requirements": [
 //     "black==22.1.0",
-//     "click<8.1",
-//     "typing-extensions>=3.10.0.0; python_version < \"3.10\""
+//     "click<8.1"
 //   ]
 // }
 // --- END PANTS LOCKFILE METADATA ---
@@ -260,8 +259,7 @@
   "prefer_older_binary": false,
   "requirements": [
     "black==22.1.0",
-    "click<8.1",
-    "typing-extensions>=3.10.0.0; python_version < \"3.10\""
+    "click<8.1"
   ],
   "requires_python": [
     "<3.11,>=3.9"

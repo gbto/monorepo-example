@@ -7,9 +7,6 @@ backend_packages = [
     "pants.backend.python.lint.flake8",
 ]
 
-[source]
-root_patterns = ["jobs/", "utils/"]
-
 [tailor]
 ignore_paths = ["infra/**"]
 
@@ -20,7 +17,7 @@ enable_resolves = true
 resolves_generate_lockfiles = true
 
 [python.resolves]
-python-default = "3rdparty/python-default/python-default.lock"
+python-default = "3rdparty/python-default.lock"
 
 [anonymous-telemetry]
 enabled = false
@@ -47,7 +44,7 @@ lockfile = "3rdparty/flake8.lock"
 
 [black]
 interpreter_constraints = [">=3.9,<3.11"]
-extra_requirements.add = ["click<8.1"]
+extra_requirements = ["click<8.1"]
 lockfile = "3rdparty/black.lock"
 
 [pytest]
