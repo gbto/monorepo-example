@@ -1,6 +1,7 @@
 """A utils example for pants build testing purposes."""
 import random
 import string
+
 import numpy as np
 import pandas as pd
 

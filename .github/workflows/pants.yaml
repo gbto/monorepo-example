@@ -51,9 +51,9 @@ jobs:
       - name: Check BUILD files
         run: ./pants tailor --check update-build-files --check
 
-      - name: Lint changed code
-        run: |
-          ./pants lint ::
+      # - name: Lint changed code
+      #   run: |
+      #     ./pants lint ::
 
       - name: Build modified images
         run: |
