@@ -49,3 +49,8 @@ lockfile = "3rdparty/black.lock"
 
 [pytest]
 lockfile = "3rdparty/pytest.lock"
+
+[mypy]
+interpreter_constraints = [">=3.10,<3.11"]
+lockfile = "3rdparty/tools/mypy.lock"
+version = "mypy==0.981"
