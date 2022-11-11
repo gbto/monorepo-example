@@ -10,13 +10,18 @@ repos:
         name: Trailing Whitespace
   - repo: local
     hooks:
-      - id: black
-        name: Black
-        entry: black
+      - id: pants-update-build-files
+        name: Format BUILD files (Pants)
+        entry: ./pants update-build-files
+        files: BUILD
         language: system
-        types: [python]
-      - id: flake8
-        name: Flake8
-        entry: flake8
+        pass_filenames: false
+      - id: pants-fmt
+        name: Format (Pants)
+        entry: ./pants fmt
         language: system
-        types: [python]
+        types_or: [python]
+      - id: pants-lint
+        name: Lint (Pants)
+        entry: ./pants --owners-not-found-behavior=ignore lint
+        language: system
