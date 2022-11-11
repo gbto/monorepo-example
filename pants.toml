@@ -1,29 +1,32 @@
 [GLOBAL]
-pants_version = "2.11.0"
+pants_version = "2.14.0"
 backend_packages = [
     "pants.backend.docker",
     "pants.backend.python",
     "pants.backend.python.lint.black",
     "pants.backend.python.lint.flake8",
+    "pants.backend.python.typecheck.mypy",
 ]
+
+
 
 [tailor]
 ignore_paths = ["infra/**"]
 
 [python]
 interpreter_constraints = [">=3.9,<3.11"]
-lockfile_generator = 'pex'
 enable_resolves = true
 resolves_generate_lockfiles = true
 
 [python.resolves]
-python-default = "3rdparty/python-default.lock"
+python-default = "3rdparty/python-default/python-default.lock"
 
 [anonymous-telemetry]
 enabled = false
 
 [docker]
 build_verbose = true
+build_args = ["ENVIRONMENT"]
 
 [docker.registries.ghcr]
 address = "ghcr.io/gbto"
@@ -51,6 +54,6 @@ lockfile = "3rdparty/black.lock"
 lockfile = "3rdparty/pytest.lock"
 
 [mypy]
-interpreter_constraints = [">=3.10,<3.11"]
-lockfile = "3rdparty/tools/mypy.lock"
+interpreter_constraints = [">=3.9,<3.11"]
+lockfile = "3rdparty/mypy.lock"
 version = "mypy==0.981"

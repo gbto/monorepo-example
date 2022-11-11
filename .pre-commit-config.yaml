@@ -23,5 +23,5 @@ repos:
         types_or: [python]
       - id: pants-lint
         name: Lint (Pants)
-        entry: ./pants --owners-not-found-behavior=ignore lint
+        entry: ./pants lint
         language: system
