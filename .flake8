@@ -1,6 +1,6 @@
 [flake8]
 select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
-ignore = ANN101,E501,S301,S403,W503,S311
+ignore = ANN101,E501,S301,S403,W503,S311,D104
 max-complexity = 10
 max-line-length = 80
 application-import-names = utils

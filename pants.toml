@@ -26,7 +26,6 @@ enabled = false
 
 [docker]
 build_verbose = true
-build_args = ["ENVIRONMENT"]
 
 [docker.registries.ghcr]
 address = "ghcr.io/gbto"

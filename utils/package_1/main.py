@@ -1,5 +1,5 @@
 """A utils example for pants build testing purposes."""
-from utils.package_1.helpers import read_config
+from package_1.helpers import read_config
 
 
 def action_1() -> None:
