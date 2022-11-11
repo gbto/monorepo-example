@@ -1,0 +1,99 @@
+name: Continuous deployment
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  verify_changed_files:
+    name: Verify changed files
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_images: ${{ steps.set-outputs.outputs.deploy_images }}
+      deploy_infra: ${{ steps.set-outputs.outputs.deploy_dags }}
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.10.0
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Check if task projects or packages changed
+        id: check_jobs_and_utils
+        uses: tj-actions/changed-files@v31
+        with:
+          files: |
+            jobs/**
+            utils/**
+
+      - name: Check if infra config changed
+        id: check_infra_configuration
+        uses: tj-actions/changed-files@v31
+        with:
+          files: |
+            infra/**
+
+      - name: Set outputs
+        id: set-outputs
+        run: |
+          echo "::set-output name=deploy_images::${{ steps.check_jobs_and_utils.outputs.any_changed == 'true' }}"
+          echo "::set-output name=deploy_infra::${{ steps.check_infra_configuration.outputs.any_changed == 'true' }}"
+
+  deploy_images:
+    name: Deploy images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.10.0
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Bootstrap Pants
+        run: ./pants --version
+
+      - name: GitHub registry auth
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GIT_TOKEN }}
+
+      - name: Build Docker images
+        env:
+          ENVIRONMENT: dev
+        run: |
+          ./pants --changed-since=origin/master dependees --transitive --closed \
+            | grep ':docker' \
+            | xargs ./pants package
+
+      - name: Publish Docker images
+        env:
+          ENVIRONMENT: dev
+        run: |
+          ./pants --changed-since=origin/master dependees --transitive --closed \
+            | grep ':docker' \
+            | xargs ./pants publish
+
+      - name: Upload Pants log
+        uses: actions/upload-artifact@v2
+        with:
+          name: pants-log
+          path: .pants.d/pants.log
+        if: always() # Save log even on failures
