@@ -23,5 +23,5 @@ repos:
         types_or: [python]
       - id: pants-lint
         name: Lint (Pants)
-        entry: ./pants lint
+        entry: ./pants --unmatched-cli-globs=ignore lint
         language: system
