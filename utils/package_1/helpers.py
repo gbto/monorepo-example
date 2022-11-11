@@ -1,3 +1,4 @@
+"""A utils example for pants build testing purposes."""
 import os
 
 import yaml
