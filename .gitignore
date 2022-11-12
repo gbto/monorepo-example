@@ -131,3 +131,4 @@ terraform.rc
 
 # environment variables
 .env
+.env
