@@ -3,7 +3,7 @@ from package_1.helpers import read_config
 
 
 def action_1() -> None:
-    """An example action to execute within job_a."""
+    """An example action to execute within task_a."""
     print("Doing stuff from package 1")
     config = read_config()
 
