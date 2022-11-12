@@ -7,7 +7,7 @@ import pandas as pd
 
 
 def action_2() -> None:
-    """An example action to execute within task_a."""
+    """An example action to execute within job_a."""
     print("Doing stuff from package 2")
     # Generate a dataframe
     df = pd.DataFrame(
