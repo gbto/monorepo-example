@@ -1,0 +1,58 @@
+[GLOBAL]
+pants_version = "2.14.0"
+backend_packages = [
+    "pants.backend.docker",
+    "pants.backend.python",
+    "pants.backend.python.lint.black",
+    "pants.backend.python.lint.flake8",
+    "pants.backend.python.typecheck.mypy",
+]
+
+
+
+[tailor]
+ignore_paths = ["infra/**"]
+
+[python]
+interpreter_constraints = [">=3.9,<3.11"]
+enable_resolves = true
+resolves_generate_lockfiles = true
+
+[python.resolves]
+python-default = "3rdparty/python-default/python-default.lock"
+
+[anonymous-telemetry]
+enabled = false
+
+[docker]
+build_verbose = true
+
+[docker.registries.ghcr]
+address = "ghcr.io/gbto"
+default = true
+
+[flake8]
+config = ".flake8"
+extra_requirements = [
+  "darglint",
+  "flake8-annotations",
+  "flake8-bandit",
+  "flake8-black",
+  "flake8-bugbear",
+  "flake8-docstrings",
+  "flake8-import-order",
+]
+lockfile = "3rdparty/flake8.lock"
+
+[black]
+interpreter_constraints = [">=3.9,<3.11"]
+extra_requirements = ["click<8.1"]
+lockfile = "3rdparty/black.lock"
+
+[pytest]
+lockfile = "3rdparty/pytest.lock"
+
+[mypy]
+interpreter_constraints = [">=3.9,<3.11"]
+lockfile = "3rdparty/mypy.lock"
+version = "mypy==0.981"

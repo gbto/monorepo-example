@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-yaml
+        name: Check YAML
+      - id: end-of-file-fixer
+        name: End-of-File Fixer
+      - id: trailing-whitespace
+        name: Trailing Whitespace
+  - repo: local
+    hooks:
+      - id: pants-update-build-files
+        name: Format BUILD files (Pants)
+        entry: ./pants update-build-files
+        files: BUILD
+        language: system
+        pass_filenames: false
+      - id: pants-fmt
+        name: Format (Pants)
+        entry: ./pants fmt
+        language: system
+        types_or: [python]
+      - id: pants-lint
+        name: Lint (Pants)
+        entry: ./pants --unmatched-cli-globs=ignore lint
+        language: system

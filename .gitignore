@@ -1,0 +1,134 @@
+# VisualStudioCode
+.vscode/**
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+.history
+.devcontainer/
+
+# IntelliJ PyCharm
+# User-specific stuff
+.idea/
+.idea_modules/
+/out/
+
+# Data test folder
+**/data-samples/
+
+# SQLTools sessions
+**/*.session.sql
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+
+# PyEnv
+.python-version
+
+# VS Code workspace settings
+.vscode/
+*.code-workspace
+
+# Python cache folders
+__pycache__/
+
+# Python virtual env folders
+.venv/
+ENV/
+
+# Env files
+.env.*
+!.env.*.template
+secrets/
+
+# Poetry lockfiles (not necessary as we generate lockfiles with Pants)
+poetry.lock
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pants workspace files
+/.pants.d/
+/dist/
+/.pids
+/.pants.workdir.file_lock*
+/.pants.rc
+
+# Local .terraform directories
+**/.terraform/
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# OSX hidden files
+**/*.DS_Store
+
+# Crash log files
+crash.log
+crash.*.log
+
+# DBT files
+dbt/logs
+dbt/profiles/logs
+dbt/profiles/.user.yml
+dbt/profiles/users.yml
+
+# Exclude all .tfvars files, which are likely to contain sensitive data, such as
+# password, private keys, and other secrets. These should not be part of version
+# control as they are data points which are potentially sensitive and subject
+# to change depending on the environment.
+*.tfvars
+*.tfvars.json
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include override files you do wish to add to version control using negated pattern
+# !example_override.tf
+
+# Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+# example: *tfplan*
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+.terraform.lock.hcl
+
+# workflow specific
+**/*.gz
+**/*.zip
+
+# environment variables
+.env
+.env
